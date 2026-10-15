@@ -1,0 +1,70 @@
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    # Caddy connects to all three site networks to proxy traffic
+    networks:
+      - net_site1
+      - net_site2
+      - net_site3
+    depends_on:
+      - site1
+      - site2
+      - site3
+
+  mariadb:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: "your_secure_root_password"
+    volumes:
+      - db_data:/var/lib/mysql
+    # MariaDB connects to all three site networks so each site can reach it
+    networks:
+      - net_site1
+      - net_site2
+      - net_site3
+
+  site1:
+    build: ./sites/site1
+    image: site1:1.0
+    restart: unless-stopped
+    mem_limit: 64m
+    # Completely isolated: only talks to Caddy and MariaDB on net_site1
+    networks:
+      - net_site1
+
+  site2:
+    build: ./sites/site2
+    image: site2:1.0
+    restart: unless-stopped
+    mem_limit: 64m
+    # Completely isolated: only talks to Caddy and MariaDB on net_site2
+    networks:
+      - net_site2
+
+  site3:
+    build: ./sites/site3
+    image: site3:1.0
+    restart: unless-stopped
+    mem_limit: 64m
+    # Completely isolated: only talks to Caddy and MariaDB on net_site3
+    networks:
+      - net_site3
+
+networks:
+  net_site1:
+  net_site2:
+  net_site3:
+
+volumes:
+  caddy_data:
+  caddy_config:
+  db_data:
