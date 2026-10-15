@@ -1,0 +1,11 @@
+facebook.com {
+reverse_proxy site1:80
+}
+
+google.com {
+reverse_proxy site2:80
+}
+
+tiktok.com {
+reverse_proxy site3:80
+}
