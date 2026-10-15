@@ -1,11 +1,11 @@
-facebook.com {
+http://facebook.com {
 reverse_proxy site1:80
 }
 
-google.com {
+http://google.com {
 reverse_proxy site2:80
 }
 
-tiktok.com {
+http://tiktok.com {
 reverse_proxy site3:80
 }
